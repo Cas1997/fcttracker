@@ -1,17 +1,17 @@
-#include "FT3Track.h"
+#include "FCTTrack.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TrackFitter.h"
-#include "ft3tools/MagField.C"
+#include "fcttools/MagField.C"
 
 #include <map>
 
-#pragma link C++ class o2::ft3::FT3Track + ;
-#pragma link C++ class std::vector < o2::ft3::FT3Track> + ;
-#pragma link C++ class o2::ft3::FT3TrackExt + ;
-#pragma link C++ class std::vector < o2::ft3::FT3TrackExt> + ;
+#pragma link C++ class o2::fct::FCTTrack + ;
+#pragma link C++ class std::vector < o2::fct::FCTTrack> + ;
+#pragma link C++ class o2::fct::FCTTrackExt + ;
+#pragma link C++ class std::vector < o2::fct::FCTTrackExt> + ;
 
-using o2::ft3::FT3Track;
+using o2::fct::FCTTrack;
 using o2::itsmft::Hit;
 using SMatrix55Sym = ROOT::Math::SMatrix<double, 5, 5, ROOT::Math::MatRepSym<double, 5>>;
 
@@ -20,40 +20,40 @@ auto PrintTracksTotal = 10;
 //std::vector<Double_t> layersX2X0 = {};
 
 std::vector<Double_t> loadx2X0fromFile(std::string configFileName);
-void setSeedCovariances(FT3Track& track);
+void setSeedCovariances(FCTTrack& track);
 
 void ALICE3_HybridTracker(Double_t clResolution = 10.0e-4, bool verbose = true) // clResolution = 8.44e-4
 {
   DEBUG_VERBOSE = verbose;
 
-  o2::ft3::TrackFitter fitter;
+  o2::fct::TrackFitter fitter;
   fitter.mVerbose = DEBUG_VERBOSE;
   auto field_z = getZField(0, 0, 0); // Get field at Center of ALICE
   fitter.setBz(field_z);
-  fitter.setLayersx2X0(loadx2X0fromFile("FT3_layout.cfg"));
+  fitter.setLayersx2X0(loadx2X0fromFile("FCT_layout.cfg"));
 
-  std::string FT3hitfile = "o2sim_HitsFT3.root";
+  std::string FCThitfile = "o2sim_HitsFCT.root";
   std::string TRKhitfile = "o2sim_HitsTRK.root";
 
   std::string ALICE3HibridTracksfile = "ALICE3tracks.root";
 
-  vector<map<int, FT3Track>> allFwdTracks;
-  vector<vector<o2::ft3::FT3TrackExt>> recoFwdTracks;
+  vector<map<int, FCTTrack>> allFwdTracks;
+  vector<vector<o2::fct::FCTTrackExt>> recoFwdTracks;
   vector<vector<Int_t>> recoFwdTrackIDs;
 
-  TFile* FT3HitFileIn = new TFile(FT3hitfile.c_str());
-  TTree* FT3hitTree = (TTree*)FT3HitFileIn->Get("o2sim");
+  TFile* FCTHitFileIn = new TFile(FCThitfile.c_str());
+  TTree* FCThitTree = (TTree*)FCTHitFileIn->Get("o2sim");
 
   TFile* TRKHitFileIn = new TFile(TRKhitfile.c_str());
   TTree* TRKhitTree = (TTree*)TRKHitFileIn->Get("o2sim");
 
-  vector<Hit>* FT3hit = nullptr;
-  FT3hitTree->SetBranchAddress("FT3Hit", &FT3hit);
+  vector<Hit>* FCThit = nullptr;
+  FCThitTree->SetBranchAddress("FCTHit", &FCThit);
 
   vector<Hit>* TRKhit = nullptr;
   TRKhitTree->SetBranchAddress("TRKHit", &TRKhit);
 
-  Int_t nEvents = FT3hitTree->GetEntries();
+  Int_t nEvents = FCThitTree->GetEntries();
 
   allFwdTracks.resize(nEvents);
   recoFwdTracks.resize(nEvents);
@@ -63,10 +63,10 @@ void ALICE3_HybridTracker(Double_t clResolution = 10.0e-4, bool verbose = true) 
 
   for (Int_t event = 0; event < nEvents; event++) {
 
-    FT3hitTree->GetEntry(event);
+    FCThitTree->GetEntry(event);
     TRKhitTree->GetEntry(event);
 
-    Int_t nFT3Hits = FT3hit->size();
+    Int_t nFCTHits = FCThit->size();
     Int_t nTRKHits = TRKhit->size();
 
     if (1) {
@@ -74,8 +74,8 @@ void ALICE3_HybridTracker(Double_t clResolution = 10.0e-4, bool verbose = true) 
     }
 
     auto& FwdTracksMap = allFwdTracks.at(event);
-    for (Int_t iHit = 0; iHit < nFT3Hits; iHit++) { // Attach FT3 hits to tracks
-      Hit* thisHit = &(*FT3hit)[iHit];
+    for (Int_t iHit = 0; iHit < nFCTHits; iHit++) { // Attach FCT hits to tracks
+      Hit* thisHit = &(*FCThit)[iHit];
       Int_t myID = thisHit->GetTrackID();
       FwdTracksMap[myID] = FwdTracksMap[myID];
       FwdTracksMap[myID].addHit(*thisHit, iHit, clResolution, true);
@@ -93,12 +93,12 @@ void ALICE3_HybridTracker(Double_t clResolution = 10.0e-4, bool verbose = true) 
     }
   }
 
-  TFile* FT3TracksFileOut = new TFile(ALICE3HibridTracksfile.c_str(), "RECREATE");
-  TTree* FT3Tree = new TTree("o2sim", "Tree with FT3 Tracks");
-  vector<o2::ft3::FT3TrackExt>* recoTracks;
+  TFile* FCTTracksFileOut = new TFile(ALICE3HibridTracksfile.c_str(), "RECREATE");
+  TTree* FCTTree = new TTree("o2sim", "Tree with FCT Tracks");
+  vector<o2::fct::FCTTrackExt>* recoTracks;
   vector<Int_t>* recoTrackIDs;
-  FT3Tree->Branch("FT3Track", &recoTracks);
-  FT3Tree->Branch("FT3TrackID", &recoTrackIDs);
+  FCTTree->Branch("FCTTrack", &recoTracks);
+  FCTTree->Branch("FCTTrackID", &recoTrackIDs);
 
   for (Int_t event = 0; event < nEvents; event++) { // Fit and save tracks
     if (1) {
@@ -129,17 +129,17 @@ void ALICE3_HybridTracker(Double_t clResolution = 10.0e-4, bool verbose = true) 
       nPrintTracks++;
     }
 
-    FT3Tree->Fill();
+    FCTTree->Fill();
   }
-  FT3TracksFileOut->Write();
+  FCTTracksFileOut->Write();
 }
 
-std::vector<Double_t> loadx2X0fromFile(std::string configFileName = "FT3_layout.cfg")
+std::vector<Double_t> loadx2X0fromFile(std::string configFileName = "FCT_layout.cfg")
 {
   std::vector<Double_t> Layersx2X0;
   std::ifstream ifs(configFileName.c_str());
   if (!ifs.good()) {
-    LOG(FATAL) << " Invalid FT3Base.configFile!";
+    LOG(FATAL) << " Invalid FCTBase.configFile!";
   }
   std::string tempstr;
   Double_t z_layer, r_in, r_out, Layerx2X0;
@@ -163,7 +163,7 @@ std::vector<Double_t> loadx2X0fromFile(std::string configFileName = "FT3_layout.
   return Layersx2X0;
 }
 
-void setSeedCovariances(FT3Track& track)
+void setSeedCovariances(FCTTrack& track)
 {
 
   auto tan_k = 10.0;

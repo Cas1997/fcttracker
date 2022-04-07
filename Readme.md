@@ -2,23 +2,23 @@
 
 ### 1. Simulation
 
-`$ o2-sim -m FT3 -e TGeant3 -g pythia8 -n 1000`
+`$ o2-sim -m FCT -e TGeant3 -g pythia8 -n 1000`
 
-Output: `o2sim_HitsFT3.root`
+Output: `o2sim_HitsFCT.root`
 
 ### 2. Tracking
-`$ root.exe -q ft3Tracker.C+`
+`$ root.exe -q fctTracker.C+`
 
-Output: `ft3tracks.root`
+Output: `fcttracks.root`
 
 ### 3. Assessment histograms
 #### Layer hit densities
 
-`$ root.exe -b -q ft3Occupancy.C+`
+`$ root.exe -b -q fctOccupancy.C+`
 
-Output: `ft3Occupancy.root`
+Output: `fctOccupancy.root`
 
 #### Tracking evalutaion
-`$ root.exe -q -b FT3TrackerChecker.C+`
+`$ root.exe -q -b FCTTrackerChecker.C+`
 
-Output: `Fittercheck_ft3tracks.root`
+Output: `Fittercheck_fcttracks.root`

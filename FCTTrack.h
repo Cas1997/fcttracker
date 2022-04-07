@@ -9,8 +9,8 @@
 // or submit itself to any jurisdiction.
 ///
 
-#ifndef O2_FT3_TRACK_H_
-#define O2_FT3_TRACK_H_
+#ifndef O2_FCT_TRACK_H_
+#define O2_FCT_TRACK_H_
 
 #include "TRandom3.h"
 #include "DataFormatsMFT/TrackMFT.h"
@@ -20,12 +20,12 @@
 
 namespace o2
 {
-namespace ft3
+namespace fct
 {
 
 using o2::itsmft::Hit;
 
-class FT3TrackExt : public o2::mft::TrackMFT
+class FCTTrackExt : public o2::mft::TrackMFT
 {
 
  public:
@@ -34,23 +34,23 @@ class FT3TrackExt : public o2::mft::TrackMFT
   Int_t getEventID() const { return mEventID; }
   void setEventID(Int_t e) { mEventID = e; }
   Int_t getNTRKHits() const { return nTRKHits; }
-  Int_t getNFT3Hits() const { return nFT3Hits; }
+  Int_t getNFCTHits() const { return nFCTHits; }
   void countTRKHit() { nTRKHits++; }
-  void countFT3Hit() { nFT3Hits++; }
+  void countFCTHit() { nFCTHits++; }
 
  private:
   Int_t mTrackID = -1;
   Int_t mEventID = -1;
-  Int_t nFT3Hits = 0;
+  Int_t nFCTHits = 0;
   Int_t nTRKHits = 0;
 };
 
-class FT3Track : public o2::ft3::FT3TrackExt
+class FCTTrack : public o2::fct::FCTTrackExt
 {
  public:
-  FT3Track() = default;
-  FT3Track(const FT3Track& t) = default;
-  ~FT3Track() = default;
+  FCTTrack() = default;
+  FCTTrack(const FCTTrack& t) = default;
+  ~FCTTrack() = default;
   const std::vector<Float_t>& getXCoordinates() const { return mX; }
   const std::vector<Float_t>& getYCoordinates() const { return mY; }
   const std::vector<Float_t>& getZCoordinates() const { return mZ; }
@@ -71,11 +71,11 @@ class FT3Track : public o2::ft3::FT3TrackExt
   std::vector<Int_t> mLayer;
   std::vector<Int_t> mHitId;
 
-  ClassDefNV(FT3Track, 1);
+  ClassDefNV(FCTTrack, 1);
 };
 
 //_________________________________________________________________________________________________
-inline void FT3Track::addHit(const Hit& ht, const Int_t hitId, const Float_t sigma = 10.e-4, Bool_t smear = true)
+inline void FCTTrack::addHit(const Hit& ht, const Int_t hitId, const Float_t sigma = 10.e-4, Bool_t smear = true)
 {
   TRandom3 rnd(0);
   auto x = ht.GetStartX() + (smear ? rnd.Gaus(0, sigma) : 0);
@@ -90,11 +90,11 @@ inline void FT3Track::addHit(const Hit& ht, const Int_t hitId, const Float_t sig
   mLayer.emplace_back(ht.GetDetectorID());
   mHitId.emplace_back(hitId);
   setNumberOfPoints(mX.size());
-  countFT3Hit();
+  countFCTHit();
 }
 
 //_________________________________________________________________________________________________
-inline void FT3Track::addTRKHit(const Hit& ht, const Int_t hitId, const Float_t sigma_ = 10.e-4, Bool_t smear = true)
+inline void FCTTrack::addTRKHit(const Hit& ht, const Int_t hitId, const Float_t sigma_ = 10.e-4, Bool_t smear = true)
 {
   if (getNumberOfPoints() > 20) { // Loopers
     return;
@@ -119,7 +119,7 @@ inline void FT3Track::addTRKHit(const Hit& ht, const Int_t hitId, const Float_t 
 }
 
 //_________________________________________________________________________________________________
-inline void FT3Track::sort()
+inline void FCTTrack::sort()
 {
   // Orders elements along z position
   struct HitData {
@@ -156,12 +156,12 @@ inline void FT3Track::sort()
   }
 }
 
-} // namespace ft3
+} // namespace fct
 } // namespace o2
 
-#pragma link C++ class o2::ft3::FT3Track + ;
-#pragma link C++ class std::vector < o2::ft3::FT3Track> + ;
-#pragma link C++ class o2::ft3::FT3TrackExt + ;
-#pragma link C++ class std::vector < o2::ft3::FT3TrackExt> + ;
+#pragma link C++ class o2::fct::FCTTrack + ;
+#pragma link C++ class std::vector < o2::fct::FCTTrack> + ;
+#pragma link C++ class o2::fct::FCTTrackExt + ;
+#pragma link C++ class std::vector < o2::fct::FCTTrackExt> + ;
 
-#endif /* O2_FT3_TRACK_H_ */
+#endif /* O2_FCT_TRACK_H_ */

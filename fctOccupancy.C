@@ -4,7 +4,7 @@
 #include <TH3F.h>
 
 #include "ITSMFTSimulation/Hit.h"
-#include "ft3tools/HistosHelpers.C"
+#include "fcttools/HistosHelpers.C"
 
 #include <map>
 #include <set>
@@ -19,16 +19,16 @@ Float_t xSectionQED = 29533.4;
 Float_t xSectionHad = 8;
 Bool_t pureQED = true;
 Float_t QEDScale = pureQED ? xSectionQED / xSectionHad : 1.0;
-std::set<int> computeDirections = {1};                 // Directions on which to compute hits
+std::set<int> computeDirections = {0};                 // Directions on which to compute hits
                                                        // direction == 1 => Forward layers
                                                        // direction == 0 => Backward layers
 Float_t nDirectionsScaling = computeDirections.size(); // Histogram scales according to number of directions
 
-void ft3Occupancy() {
+void fctOccupancy() {
 
-  std::string hitfile = "o2sim_HitsFT3.root";
-  std::string tr3Occupancyfile = "ft3Occupancy.root";
-  std::string annotation = "FT3 occupancy";
+  std::string hitfile = "o2sim_HitsFCT.root";
+  std::string tr3Occupancyfile = "fctOccupancy.root";
+  std::string annotation = "FCT occupancy";
 
   enum TH2HistosCodes {
     kLay0Occupancy = 0,
@@ -90,7 +90,7 @@ void ft3Occupancy() {
   TTree *hitTree = (TTree *)HitFileIn->Get("o2sim");
 
   vector<Hit> *hit = nullptr;
-  hitTree->SetBranchAddress("FT3Hit", &hit);
+  hitTree->SetBranchAddress("FCTHit", &hit);
 
   Int_t nEvents = hitTree->GetEntries();
   std::cout << " Computing hits from " << nEvents << " events" << std::endl;

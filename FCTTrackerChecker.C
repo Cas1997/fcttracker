@@ -77,9 +77,9 @@ bool pt_4(float_t pt)
 }
 
 //_________________________________________________________________________________________________
-int ALICE3HybridTrackerChecker(const Char_t* trkFile = "ALICE3tracks.root",
-                               const Char_t* o2sim_KineFile = "o2sim_Kine.root",
-                               const Char_t* HitsFCTFile = "o2sim_HitsFCT.root")
+int FCTTrackerChecker(const Char_t* trkFile = "fcttracks.root",
+                      const Char_t* o2sim_KineFile = "o2sim_Kine.root",
+                      const Char_t* HitsFCTFile = "o2sim_HitsFCT.root")
 {
 
   // Histos parameters
@@ -96,9 +96,9 @@ int ALICE3HybridTrackerChecker(const Char_t* trkFile = "ALICE3tracks.root",
 
   // Seed configuration
   std::string seed_cfg{trkFile};
-  std::string trk_start{"ALICE3tracks_"};
+  std::string trk_start{"fcttracks_"};
   std::string trk_ext{".root"};
-  std::string trk_trk{"ALICE3tracks"};
+  std::string trk_trk{"fcttracks"};
   if (seed_cfg.find(trk_start) < seed_cfg.length())
     seed_cfg.replace(seed_cfg.find(trk_start), trk_start.length(), "");
   if (seed_cfg.find(trk_ext) < seed_cfg.length())
@@ -159,12 +159,12 @@ int ALICE3HybridTrackerChecker(const Char_t* trkFile = "ALICE3tracks.root",
     {kFCTTrackInvPtResolutionPtEta, "FCTTrackInvPtResolutionPtEta"}};
 
   std::map<int, std::array<double, 9>> TH3Binning{
-    {kFCTTrackDeltaYVertexPtEta, {42, 0, 21, 90, -4.5, 4.5, 2e3, -1e3, 1e3}},
-    {kFCTTrackDeltaXVertexPtEta, {42, 0, 21, 90, -4.5, 4.5, 2e3, -1e3, 1e3}},
-    {kFCTTrackPtResolutionPtEta, {42, 0, 21, 90, -4.5, 4.5, 1000, -2, 50}},
-    {kFCTTrackInvQPtPullPtEta, {42, 0, 21, 90, -4.5, 4.5, 200, -5, 5}},
-    {kFCTTrackInvQPtResolutionPtEta, {42, 0, 21, 90, -4.5, 4.5, 1000, -2.4, 2.4}},
-    {kFCTTrackInvPtResolutionPtEta, {42, 0, 21, 90, -4.5, 4.5, 2500, -5, 150}}};
+    {kFCTTrackDeltaYVertexPtEta, {105, 0, 21, 62, 1.7, 4.5, 2e4, -1e4, 1e4}},
+    {kFCTTrackDeltaXVertexPtEta, {105, 0, 21, 62, 1.7, 4.5, 2e4, -1e4, 14}},
+    {kFCTTrackPtResolutionPtEta, {105, 0, 21, 62, 1.7, 4.5, 1000, -2, 50}},
+    {kFCTTrackInvQPtPullPtEta, {105, 0, 21, 62, 1.7, 4.5, 200, -5, 5}},
+    {kFCTTrackInvQPtResolutionPtEta, {105, 0, 21, 62, 1.7, 4.5, 2000, -2, 2}},
+    {kFCTTrackInvPtResolutionPtEta, {105, 0, 21, 62, 1.7, 4.5, 2500, -5, 150}}};
 
   std::map<int, const char*> TH3XaxisTitles{
     {kFCTTrackDeltaXVertexPtEta, "p_t"},
@@ -702,7 +702,7 @@ int ALICE3HybridTrackerChecker(const Char_t* trkFile = "ALICE3tracks.root",
     o2SimKineTree->GetEntry(iEvent);
     for (auto& trackFCT : trackFCTVec) {
       auto trackID = recoTrackIDs->at(iTrack);
-      if (trackFCT.getNumberOfPoints() < minHitsPerTrack or trackFCT.getTrackChi2() > 300) {
+      if (trackFCT.getNumberOfPoints() < minHitsPerTrack) {
         iTrack++;
         continue;
       }
@@ -757,12 +757,12 @@ int ALICE3HybridTrackerChecker(const Char_t* trkFile = "ALICE3tracks.root",
         auto d_Charge = Q_fit - Q_MC;
         auto trackChi2 = trackFCT.getTrackChi2();
 
-        TH3Histos[kFCTTrackDeltaXVertexPtEta]->Fill(Pt_MC, eta_MC, 1e4 * dx);
-        TH3Histos[kFCTTrackDeltaYVertexPtEta]->Fill(Pt_MC, eta_MC, 1e4 * dy);
-        TH3Histos[kFCTTrackPtResolutionPtEta]->Fill(Pt_MC, eta_MC, (Pt_fit - Pt_MC) / Pt_MC);
-        TH3Histos[kFCTTrackInvQPtPullPtEta]->Fill(Pt_MC, eta_MC, d_invQPt / sqrt(trackFCT.getCovariances()(4, 4)));
-        TH3Histos[kFCTTrackInvPtResolutionPtEta]->Fill(Pt_MC, eta_MC, (1.0 / Pt_fit - 1.0 / Pt_MC) * Pt_MC);
-        TH3Histos[kFCTTrackInvQPtResolutionPtEta]->Fill(Pt_MC, eta_MC, (invQPt_Fit - invQPt_MC) / invQPt_MC);
+        TH3Histos[kFCTTrackDeltaXVertexPtEta]->Fill(Pt_MC, std::abs(eta_MC), 1e4 * dx);
+        TH3Histos[kFCTTrackDeltaYVertexPtEta]->Fill(Pt_MC, std::abs(eta_MC), 1e4 * dy);
+        TH3Histos[kFCTTrackPtResolutionPtEta]->Fill(Pt_MC, std::abs(eta_MC), (Pt_fit - Pt_MC) / Pt_MC);
+        TH3Histos[kFCTTrackInvQPtPullPtEta]->Fill(Pt_MC, std::abs(eta_MC), d_invQPt / sqrt(trackFCT.getCovariances()(4, 4)));
+        TH3Histos[kFCTTrackInvPtResolutionPtEta]->Fill(Pt_MC, std::abs(eta_MC), (1.0 / Pt_fit - 1.0 / Pt_MC) * Pt_MC);
+        TH3Histos[kFCTTrackInvQPtResolutionPtEta]->Fill(Pt_MC, std::abs(eta_MC), (invQPt_Fit - invQPt_MC) / invQPt_MC);
 
         TH1Histos[kFCTTracksP]->Fill(trackFCT.getP());
         TH1Histos[kFCTTrackDeltaTanl]->Fill(d_tanl);

@@ -3,10 +3,10 @@
 #include <fstream>
 
 std::vector<Float_t> zPositionsMFT{-45.3, -46.7, -48.6, -50.0, -52.4, -53.8, -67.7, -69.1, -76., -77.5};
-std::vector<Float_t> zPositionsFT3{-16., -20., -24., -77., -100., -122., -150., -180., -220., -279.};
-//std::vector<Float_t> x2X0FT3{0.001, 0.001, 0.001, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01};
+std::vector<Float_t> zPositionsFCT{-16., -20., -24., -77., -100., -122., -150., -180., -220., -279.};
+//std::vector<Float_t> x2X0FCT{0.001, 0.001, 0.001, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01};
 
-std::vector<Double_t> x2X0FT3;
+std::vector<Double_t> x2X0FCT;
 
 std::vector<Double_t> loadx2X0fromFile(std::string configFileName);
 
@@ -40,11 +40,11 @@ void FWDFat_(float eta = 2.6, Float_t sigma = 8.44e-4)
 
     Float_t invqpt = 1.0 / pt;
 
-    probe.init(phi0, tanl0, invqpt, zPositionsFT3.back(), zField);
+    probe.init(phi0, tanl0, invqpt, zPositionsFCT.back(), zField);
 
-    for (int i = zPositionsFT3.size(); i--;) {
-      auto z = zPositionsFT3[i];
-      auto x2X0Layer = x2X0FT3[i];
+    for (int i = zPositionsFCT.size(); i--;) {
+      auto z = zPositionsFCT[i];
+      auto x2X0Layer = x2X0FCT[i];
       //std::cout << "===> layer " << i << " ; z = " << z << std::endl;
 
       probe.updateFAT(z, sigma2, x2X0Layer);
@@ -61,7 +61,7 @@ void FWDFat_(float eta = 2.6, Float_t sigma = 8.44e-4)
     vtxXResolutions.push_back(probe.getVertexSigmaXResolution());
     pts.push_back(pt);
   }
-  std::cout << " ====> FT3 FAT: eta = " << eta << std::endl;
+  std::cout << " ====> FCT FAT: eta = " << eta << std::endl;
   for (int i = pts.size(); i--;) {
     std::cout << " pt = " << pts[i] << " \n  ==> Pt Resolution = " << ptResolutions[i] * 100.0 << " % \n"
               << "  ==> Vertex sigma_x = " << vtxXResolutions[i] << " um \n";
@@ -92,11 +92,11 @@ void FWDFat2(float eta = 2.6, float pt = 1.0, Float_t sigma = 8.44e-4)
 
   Float_t invqpt = 1.0 / pt;
 
-  probe.init(phi0, tanl0, invqpt, zPositionsFT3.back(), zField);
+  probe.init(phi0, tanl0, invqpt, zPositionsFCT.back(), zField);
 
-  for (int i = zPositionsFT3.size(); i--;) {
-    auto z = zPositionsFT3[i];
-    auto x2X0Layer = x2X0FT3[i];
+  for (int i = zPositionsFCT.size(); i--;) {
+    auto z = zPositionsFCT[i];
+    auto x2X0Layer = x2X0FCT[i];
     //std::cout << "===> layer " << i << " ; z = " << z << std::endl;
 
     probe.updateFAT(z, sigma2, x2X0Layer);
@@ -113,20 +113,20 @@ void FWDFat2(float eta = 2.6, float pt = 1.0, Float_t sigma = 8.44e-4)
   vtxXResolutions.push_back(probe.getVertexSigmaXResolution());
   pts.push_back(pt);
 
-  std::cout << " ====> FT3 FAT: eta = " << eta << std::endl;
+  std::cout << " ====> FCT FAT: eta = " << eta << std::endl;
   for (int i = pts.size(); i--;) {
     std::cout << " pt = " << pts[i] << " \n  ==> Pt Resolution = " << ptResolutions[i] * 100.0 << " % \n"
               << "  ==> Vertex sigma_x = " << vtxXResolutions[i] << " um \n";
   }
 }
 
-float FT3FATPtRes(float pt, float eta, float sigma = 8.44e-4, bool enableMCS = true, float zField = 5.0, bool verbose = false)
+float FCTFATPtRes(float pt, float eta, float sigma = 8.44e-4, bool enableMCS = true, float zField = 5.0, bool verbose = false)
 {
   Float_t tanl0 = EtaToTanl(eta);
   Float_t phi0 = 1;
   float sigma2 = sigma * sigma;
-  if (!x2X0FT3.size()) {
-    x2X0FT3 = loadx2X0fromFile("FT3_layout.cfg");
+  if (!x2X0FCT.size()) {
+    x2X0FCT = loadx2X0fromFile("FCT_layout.cfg");
   }
 
   FwdFATProbe probe;
@@ -134,13 +134,13 @@ float FT3FATPtRes(float pt, float eta, float sigma = 8.44e-4, bool enableMCS = t
 
   Float_t invqpt = 1.0 / pt;
   if (verbose) {
-    std::cout << "FT3FATPtRes. Probe starting parameters: phi0 = " << phi0 << " tanl0 = " << tanl0 << " invqpt = " << invqpt << std::endl;
+    std::cout << "FCTFATPtRes. Probe starting parameters: phi0 = " << phi0 << " tanl0 = " << tanl0 << " invqpt = " << invqpt << std::endl;
   }
-  probe.init(phi0, tanl0, invqpt, zPositionsFT3.back(), zField);
+  probe.init(phi0, tanl0, invqpt, zPositionsFCT.back(), zField);
 
-  for (int i = zPositionsFT3.size(); i--;) {
-    auto z = zPositionsFT3[i];
-    float x2X0Layer = enableMCS ? x2X0FT3[i] : 0.0;
+  for (int i = zPositionsFCT.size(); i--;) {
+    auto z = zPositionsFCT[i];
+    float x2X0Layer = enableMCS ? x2X0FCT[i] : 0.0;
     if (verbose)
       std::cout << "===> layer " << i << " ; z = " << z << std::endl;
 
@@ -157,14 +157,14 @@ float FT3FATPtRes(float pt, float eta, float sigma = 8.44e-4, bool enableMCS = t
   return probe.getInvQPtResolution();
 }
 
-float FT3FATvtxXRes(float pt, float eta, float sigma = 8.44e-4, float zField = 5.0)
+float FCTFATvtxXRes(float pt, float eta, float sigma = 8.44e-4, float zField = 5.0)
 {
 
   Float_t tanl0 = EtaToTanl(eta);
   Float_t phi0 = 0;
   float sigma2 = sigma * sigma;
-  if (!x2X0FT3.size()) {
-    x2X0FT3 = loadx2X0fromFile("FT3_layout.cfg");
+  if (!x2X0FCT.size()) {
+    x2X0FCT = loadx2X0fromFile("FCT_layout.cfg");
   }
 
   FwdFATProbe probe;
@@ -172,11 +172,11 @@ float FT3FATvtxXRes(float pt, float eta, float sigma = 8.44e-4, float zField = 5
 
   Float_t invqpt = 1.0 / pt;
 
-  probe.init(phi0, tanl0, invqpt, zPositionsFT3.back(), zField);
+  probe.init(phi0, tanl0, invqpt, zPositionsFCT.back(), zField);
 
-  for (int i = zPositionsFT3.size(); i--;) {
-    auto z = zPositionsFT3[i];
-    auto x2X0Layer = x2X0FT3[i];
+  for (int i = zPositionsFCT.size(); i--;) {
+    auto z = zPositionsFCT[i];
+    auto x2X0Layer = x2X0FCT[i];
     //std::cout << "===> layer " << i << " ; z = " << z << std::endl;
 
     probe.updateFAT(z, sigma2, x2X0Layer);
@@ -192,12 +192,12 @@ float FT3FATvtxXRes(float pt, float eta, float sigma = 8.44e-4, float zField = 5
   return probe.getVertexSigmaXResolution();
 }
 
-void checkFT3FATPtRes(float pt, float eta, float sigma = 8.44e-4, float zField = 5.0, bool verbose = false)
+void checkFCTFATPtRes(float pt, float eta, float sigma = 8.44e-4, float zField = 5.0, bool verbose = false)
 {
-  auto ptres_noMCS = FT3FATPtRes(pt, eta, sigma, false, zField, verbose);
-  //auto ptres_onlyMCS = FT3FATPtRes(pt, eta, 1e-5, true, zField, verbose);
+  auto ptres_noMCS = FCTFATPtRes(pt, eta, sigma, false, zField, verbose);
+  //auto ptres_onlyMCS = FCTFATPtRes(pt, eta, 1e-5, true, zField, verbose);
   //auto ptres_combined = sqrt(ptres_noMCS * ptres_noMCS + ptres_onlyMCS * ptres_onlyMCS);
-  //auto ptres_FAT = FT3FATPtRes(pt, eta, sigma, true, zField, verbose);
+  //auto ptres_FAT = FCTFATPtRes(pt, eta, sigma, true, zField, verbose);
   std::cout << " ptres_noMCS = " << ptres_noMCS << std::endl;
   //std::cout << " ptres_onlyMCS = " << ptres_onlyMCS << std::endl;
   //std::cout << " ptres_combined = " << ptres_combined << std::endl;
@@ -205,23 +205,23 @@ void checkFT3FATPtRes(float pt, float eta, float sigma = 8.44e-4, float zField =
   return;
 }
 
-void checkFT3FATPtResCSV(float pt, float eta, float sigma = 8.44e-4, float zField = 5.0, bool verbose = false)
+void checkFCTFATPtResCSV(float pt, float eta, float sigma = 8.44e-4, float zField = 5.0, bool verbose = false)
 {
-  auto ptres_noMCS = FT3FATPtRes(pt, eta, sigma, false, zField, verbose);
-  auto ptres_onlyMCS = FT3FATPtRes(pt, eta, 1e-6, true, zField, verbose);
+  auto ptres_noMCS = FCTFATPtRes(pt, eta, sigma, false, zField, verbose);
+  auto ptres_onlyMCS = FCTFATPtRes(pt, eta, 1e-6, true, zField, verbose);
   auto ptres_combined = sqrt(ptres_noMCS * ptres_noMCS + ptres_onlyMCS * ptres_onlyMCS);
-  auto ptres_FAT = FT3FATPtRes(pt, eta, sigma, true, zField, verbose);
+  auto ptres_FAT = FCTFATPtRes(pt, eta, sigma, true, zField, verbose);
   std::cout << pt << " ; " << eta << " ; " << ptres_noMCS << " ; " << ptres_onlyMCS << " ; " << ptres_combined << " ; " << ptres_FAT << std::endl;
 
   return;
 }
 
-std::vector<Double_t> loadx2X0fromFile(std::string configFileName = "FT3_layout.cfg")
+std::vector<Double_t> loadx2X0fromFile(std::string configFileName = "FCT_layout.cfg")
 {
   std::vector<Double_t> Layersx2X0;
   std::ifstream ifs(configFileName.c_str());
   if (!ifs.good()) {
-    std::cout << " Invalid FT3Base.configFile!" << std::endl;
+    std::cout << " Invalid FCTBase.configFile!" << std::endl;
     exit(-1);
   }
   std::string tempstr;
@@ -252,7 +252,7 @@ std::vector<float> getFATPtRes_pts_at_eta(std::vector<float> pts, float eta, flo
 {
   std::vector<float> ptResolutions;
   for (auto pt : pts) {
-    auto ptres = FT3FATPtRes(pt, eta, sigma, enableMCS);
+    auto ptres = FCTFATPtRes(pt, eta, sigma, enableMCS);
     //std::cout << "pt =  " << pt << " eta = " << eta << " ptRes = " << ptres << std::endl;
     ptResolutions.push_back(ptres);
   }
@@ -264,7 +264,7 @@ std::vector<float> getFATPtRes_etas_at_pt(std::vector<float> etas, float pt, flo
 {
   std::vector<float> ptResolutions;
   for (auto eta : etas) {
-    auto ptres = FT3FATPtRes(pt, eta, sigma, enableMCS);
+    auto ptres = FCTFATPtRes(pt, eta, sigma, enableMCS);
     //std::cout << "pt =  " << pt << " eta = " << eta << " ptRes = " << ptres << std::endl;
     ptResolutions.push_back(ptres);
   }
@@ -276,7 +276,7 @@ std::vector<float> getFATvtxXRes_etas_at_pt(std::vector<float> etas, float pt, f
 {
   std::vector<float> vtxResolutions;
   for (auto eta : etas) {
-    auto vtxRes = FT3FATvtxXRes(pt, eta, sigma, enableMCS);
+    auto vtxRes = FCTFATvtxXRes(pt, eta, sigma, enableMCS);
     //std::cout << "pt =  " << pt << " eta = " << eta << " vtxRes = " << vtxRes << std::endl;
     vtxResolutions.push_back(vtxRes);
   }
@@ -288,7 +288,7 @@ std::vector<float> getFATvtxXRes_pts_at_eta(std::vector<float> pts, float eta, f
 {
   std::vector<float> vtxResolutions;
   for (auto pt : pts) {
-    auto vtxRes = FT3FATvtxXRes(pt, eta, sigma, enableMCS);
+    auto vtxRes = FCTFATvtxXRes(pt, eta, sigma, enableMCS);
     //std::cout << "pt =  " << pt << " eta = " << eta << " vtxRes = " << vtxRes << std::endl;
     vtxResolutions.push_back(vtxRes);
   }
@@ -298,6 +298,6 @@ std::vector<float> getFATvtxXRes_pts_at_eta(std::vector<float> pts, float eta, f
 void FWDFat()
 {
   //for (auto eta : {0.2, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.2, 2.4, 2.8, 3.0, 3.4, 3.6}) {
-  //  checkFT3FATPtResCSV(9.1,-eta);
+  //  checkFCTFATPtResCSV(9.1,-eta);
   //  }
 }

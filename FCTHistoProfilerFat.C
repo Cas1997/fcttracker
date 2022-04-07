@@ -35,10 +35,10 @@ float ptmax = 10;
 int nPtPoints = 100;
 bool FAT_ENABLED = true;
 
-// Estimages pt and vertexing resolution from TH3 histograms produced by FT3TrackerChecker
+// Estimages pt and vertexing resolution from TH3 histograms produced by FCTTrackerChecker
 //
 //_________________________________________________________________________________________
-void FT3HistoProfilerFat()
+void FCTHistoProfilerFat()
 {
 
   gStyle->SetHistLineWidth(3);
@@ -59,7 +59,7 @@ void FT3HistoProfilerFat()
     etamax = 2.0;
   }
 
-  TFile* chkFileIn = new TFile("Fittercheck_ft3tracks.root");
+  TFile* chkFileIn = new TFile("Fittercheck_fcttracks.root");
 
   // FAT pt resolution vs. pt
   auto CPtResInvPt = new TCanvas();
@@ -84,7 +84,7 @@ void FT3HistoProfilerFat()
   }
 
   // InvPtResolution vs pt full simulation
-  auto FT3TrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackInvQPtResolutionPtEta");
+  auto FCTTrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackInvQPtResolutionPtEta");
   int marker = kFullCircle;
   bool first = true;
 
@@ -92,10 +92,10 @@ void FT3HistoProfilerFat()
 
     auto etamax = etamin + etaWindow;
 
-    FT3TrackInvQPtResolutionPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
+    FCTTrackInvQPtResolutionPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
 
     auto title = Form("InvQPtRes_%1.1f_%1.1f_xz", etamin, etamax);
-    auto a = (TH2F*)FT3TrackInvQPtResolutionPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackInvQPtResolutionPtEta->Project3D(title);
     a->GetXaxis()->SetRangeUser(-20, 20);
 
     a->FitSlicesX(0, 0, -1, 1);
@@ -143,18 +143,18 @@ void FT3HistoProfilerFat()
   }
 
   // InvPtResolution vs eta
-  FT3TrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackInvQPtResolutionPtEta");
-  FT3TrackInvQPtResolutionPtEta->GetYaxis()->SetRange(0, 0);
+  FCTTrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackInvQPtResolutionPtEta");
+  FCTTrackInvQPtResolutionPtEta->GetYaxis()->SetRange(0, 0);
 
   marker = kFullCircle;
   first = true;
   for (auto ptmin : ptList) {
     auto ptmax = ptmin + ptWindow;
 
-    FT3TrackInvQPtResolutionPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
+    FCTTrackInvQPtResolutionPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
 
     auto title = Form("InvQPtResEta_%1.1f_%1.1f_yz", ptmin, ptmax);
-    auto a = (TH2F*)FT3TrackInvQPtResolutionPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackInvQPtResolutionPtEta->Project3D(title);
     a->GetXaxis()->SetRangeUser(-1, 10);
 
     a->FitSlicesX(0, 0, -1, 1);
@@ -203,10 +203,10 @@ void FT3HistoProfilerFat()
 
   //
   // Vertexing resolution vs eta
-  auto FT3TrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackDeltaXVertexPtEta");
-  FT3TrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
+  auto FCTTrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackDeltaXVertexPtEta");
+  FCTTrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
 
-  FT3TrackDeltaXVertexPtEta->RebinY(2);
+  FCTTrackDeltaXVertexPtEta->RebinY(2);
 
   marker = kFullCircle;
   first = true;
@@ -214,10 +214,10 @@ void FT3HistoProfilerFat()
 
     auto ptmax = ptmin + ptWindow;
 
-    FT3TrackDeltaXVertexPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
+    FCTTrackDeltaXVertexPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
 
     auto title = Form("VertXResEta_%1.1f_%1.1f_yz", ptmin, ptmax);
-    auto a = (TH2F*)FT3TrackDeltaXVertexPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackDeltaXVertexPtEta->Project3D(title);
     a->GetXaxis()->SetRangeUser(-1, 10);
     a->FitSlicesX(0, 0, -1, 1);
     auto th2VertEta = (TH2F*)gDirectory->Get((std::string(a->GetName()) + std::string("_2")).c_str());
@@ -262,17 +262,17 @@ void FT3HistoProfilerFat()
   }
 
   // Vertexing resolution vs pt
-  FT3TrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackDeltaXVertexPtEta");
-  FT3TrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
-  FT3TrackDeltaXVertexPtEta->GetXaxis()->SetRange(0, 0);
+  FCTTrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackDeltaXVertexPtEta");
+  FCTTrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
+  FCTTrackDeltaXVertexPtEta->GetXaxis()->SetRange(0, 0);
 
   marker = kFullCircle;
   first = true;
   for (auto etamin : etaList) { // 10 Hits
     auto etamax = etamin + etaWindow;
-    FT3TrackDeltaXVertexPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
+    FCTTrackDeltaXVertexPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
     auto title = Form("VertResPt_%1.1f_%1.1f_xz", etamin, etamax);
-    auto a = (TH2F*)FT3TrackDeltaXVertexPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackDeltaXVertexPtEta->Project3D(title);
     a->SetTitle(title);
     a->FitSlicesX(0, 0, -1, 1);
     auto th2VertResolutionPt = (TH2F*)gDirectory->Get((std::string(a->GetName()) + std::string("_2")).c_str());

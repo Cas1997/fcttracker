@@ -23,7 +23,7 @@ using o2::math_utils::fitGaus;
 
 namespace o2
 {
-namespace ft3
+namespace fct
 {
 
 //_________________________________________________________________________________________________
@@ -39,7 +39,7 @@ void TrackFitter::setBz(Double_t bZ)
 }
 
 //_________________________________________________________________________________________________
-bool TrackFitter::fit(FT3Track& track, bool outward)
+bool TrackFitter::fit(FCTTrack& track, bool outward)
 {
 
   /// Fit a track using its attached clusters
@@ -90,7 +90,7 @@ bool TrackFitter::fit(FT3Track& track, bool outward)
 }
 
 //_________________________________________________________________________________________________
-bool TrackFitter::initTrack(FT3Track& track, bool outward)
+bool TrackFitter::initTrack(FCTTrack& track, bool outward)
 {
 
   // initialize the starting track parameters
@@ -165,7 +165,7 @@ bool TrackFitter::initTrack(FT3Track& track, bool outward)
 }
 
 //_________________________________________________________________________________________________
-bool TrackFitter::computeCluster(FT3Track& track, int cluster)
+bool TrackFitter::computeCluster(FCTTrack& track, int cluster)
 {
   /// Propagate track to the z position of the new cluster
   /// accounting for MCS dispersion in the current layer and the other(s)
@@ -241,7 +241,7 @@ bool TrackFitter::computeCluster(FT3Track& track, int cluster)
 }
 
 //_________________________________________________________________________________________________
-void TrackFitter::MinuitFit(FT3Track& track)
+void TrackFitter::MinuitFit(FCTTrack& track)
 {
   //std::ofstream log("MinuitFitter_Log");
   initTrack(track, 1);
@@ -318,7 +318,7 @@ void myFitFcn(Int_t&, Double_t*, Double_t& fval, Double_t* p, Int_t)
   Double_t tmp;
 
   //   o2::track::TrackParFwd tempTrack;
-  FT3Track tempTrack;
+  FCTTrack tempTrack;
   auto fieldZ = -5.; //mBZField;
   auto zPositionsMFT = TrackFitter::PosZ;
 
@@ -344,7 +344,7 @@ void myFitFcn(Int_t&, Double_t*, Double_t& fval, Double_t* p, Int_t)
 }
 
 //_________________________________________________________________________________________________
-Double_t invQPtFromFCF(const FT3Track& track, Double_t bFieldZ,
+Double_t invQPtFromFCF(const FCTTrack& track, Double_t bFieldZ,
                        Double_t& sigmainvqptsq)
 {
 
@@ -550,5 +550,5 @@ Bool_t LinearRegression(Int_t nVal, Double_t* xVal, Double_t* yVal,
   return kTRUE;
 }
 
-} // namespace ft3
+} // namespace fct
 } // namespace o2

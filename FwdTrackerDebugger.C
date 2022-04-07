@@ -15,19 +15,19 @@
 #include "Math/SMatrix.h"
 #endif
 
-#include "FT3Track.h"
+#include "FCTTrack.h"
 #include "TrackFitter.h"
 
-#pragma link C++ class o2::ft3::FT3Track + ;
+#pragma link C++ class o2::fct::FCTTrack + ;
 
 using SMatrix55Sym = ROOT::Math::SMatrix<double, 5, 5, ROOT::Math::MatRepSym<double, 5>>;
-using o2::ft3::FT3Track;
+using o2::fct::FCTTrack;
 
 enum TH3HistosCodes {
-  kFT3TrackDeltaXVertexPtEta = 0,
-  kFT3TrackDeltaYVertexPtEta = 1,
-  kFT3TrackInvQPtResolutionPtEta = 2,
-  kFT3TrackInvQPtPullPtEta = 3
+  kFCTTrackDeltaXVertexPtEta = 0,
+  kFCTTrackDeltaYVertexPtEta = 1,
+  kFCTTrackInvQPtResolutionPtEta = 2,
+  kFCTTrackInvQPtPullPtEta = 3
 };
 
 bool DEBUG_VERBOSE = !true;
@@ -42,12 +42,12 @@ void DrawTrees(const char* treefile = "fwdtrackdebugger.root");
 void printCanvas(TCanvas* c, const char* filename);
 void exportHisto(TH2F* histo, const char* filename);
 void exportHisto(TH1F* histo, const char* filename);
-void setSeedCovariances(FT3Track& track);
+void setSeedCovariances(FCTTrack& track);
 
 void simFwdTracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, float etaMax, float zField, std::vector<float> zPositionsVec, std::vector<float> layResVec, TTree* trkDBGTree, std::vector<std::unique_ptr<TH3F>>& TH3Histos);
-void simFT3Tracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, float etaMax, float zField, TTree* trkDBGTree, std::vector<std::unique_ptr<TH3F>>& TH3Histos);
+void simFCTTracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, float etaMax, float zField, TTree* trkDBGTree, std::vector<std::unique_ptr<TH3F>>& TH3Histos);
 
-o2::ft3::TrackFitter fitter;
+o2::fct::TrackFitter fitter;
 o2::track::TrackParFwd MCTrack_;
 o2::mft::TrackMFT probe;
 TRandom3 rnd(0);
@@ -90,40 +90,40 @@ void FwdTrackerDebugger(size_t nTracks = 1000,
   std::vector<std::unique_ptr<TH3F>> TH3Histos;
 
   std::map<int, const char*> TH3Names{
-    {kFT3TrackDeltaXVertexPtEta, "FT3DBGTrackDeltaXVertexPtEta"},
-    {kFT3TrackDeltaYVertexPtEta, "FT3DBGTrackDeltaYVertexPtEta"},
-    {kFT3TrackInvQPtResolutionPtEta, "FT3DBGTrackInvQPtResolutionPtEta"},
-    {kFT3TrackInvQPtPullPtEta, "FT3DBGTrackInvQPtPullPtEta"}};
+    {kFCTTrackDeltaXVertexPtEta, "FCTDBGTrackDeltaXVertexPtEta"},
+    {kFCTTrackDeltaYVertexPtEta, "FCTDBGTrackDeltaYVertexPtEta"},
+    {kFCTTrackInvQPtResolutionPtEta, "FCTDBGTrackInvQPtResolutionPtEta"},
+    {kFCTTrackInvQPtPullPtEta, "FCTDBGTrackInvQPtPullPtEta"}};
 
   std::map<int, const char*> TH3Titles{
-    {kFT3TrackDeltaXVertexPtEta, "FT3DBGTrackDeltaXVertexPtEta"},
-    {kFT3TrackDeltaYVertexPtEta, "FT3DBGTrackDeltaYVertexPtEta"},
-    {kFT3TrackInvQPtPullPtEta, "FT3DBGTrackInvQPtPullPtEta"},
-    {kFT3TrackInvQPtResolutionPtEta, "FT3DBGTrackInvQPtResolutionPtEta"}};
+    {kFCTTrackDeltaXVertexPtEta, "FCTDBGTrackDeltaXVertexPtEta"},
+    {kFCTTrackDeltaYVertexPtEta, "FCTDBGTrackDeltaYVertexPtEta"},
+    {kFCTTrackInvQPtPullPtEta, "FCTDBGTrackInvQPtPullPtEta"},
+    {kFCTTrackInvQPtResolutionPtEta, "FCTDBGTrackInvQPtResolutionPtEta"}};
 
   std::map<int, std::array<double, 9>> TH3Binning{
-    {kFT3TrackDeltaXVertexPtEta, {20, 0, 10, 84, 1.7, 4.5, 500, -500, 500}},
-    {kFT3TrackDeltaYVertexPtEta, {50, 0, 10, 84, 1.7, 4.5, 500, -500, 500}},
-    {kFT3TrackInvQPtPullPtEta, {200, 0, 20, 84, 1.7, 4.5, 200, -5, 5}},
-    {kFT3TrackInvQPtResolutionPtEta, {200, 0, 20, 84, 1.7, 4.5, 100, -1, 1}}};
+    {kFCTTrackDeltaXVertexPtEta, {20, 0, 10, 84, 1.7, 4.5, 500, -500, 500}},
+    {kFCTTrackDeltaYVertexPtEta, {50, 0, 10, 84, 1.7, 4.5, 500, -500, 500}},
+    {kFCTTrackInvQPtPullPtEta, {200, 0, 20, 84, 1.7, 4.5, 200, -5, 5}},
+    {kFCTTrackInvQPtResolutionPtEta, {200, 0, 20, 84, 1.7, 4.5, 100, -1, 1}}};
 
   std::map<int, const char*> TH3XaxisTitles{
-    {kFT3TrackDeltaXVertexPtEta, "p_t"},
-    {kFT3TrackDeltaYVertexPtEta, "p_t"},
-    {kFT3TrackInvQPtPullPtEta, "p_t"},
-    {kFT3TrackInvQPtResolutionPtEta, "p_t"}};
+    {kFCTTrackDeltaXVertexPtEta, "p_t"},
+    {kFCTTrackDeltaYVertexPtEta, "p_t"},
+    {kFCTTrackInvQPtPullPtEta, "p_t"},
+    {kFCTTrackInvQPtResolutionPtEta, "p_t"}};
 
   std::map<int, const char*> TH3YaxisTitles{
-    {kFT3TrackDeltaXVertexPtEta, "\\eta"},
-    {kFT3TrackDeltaYVertexPtEta, "\\eta"},
-    {kFT3TrackInvQPtPullPtEta, "\\eta"},
-    {kFT3TrackInvQPtResolutionPtEta, "\\eta"}};
+    {kFCTTrackDeltaXVertexPtEta, "\\eta"},
+    {kFCTTrackDeltaYVertexPtEta, "\\eta"},
+    {kFCTTrackInvQPtPullPtEta, "\\eta"},
+    {kFCTTrackInvQPtResolutionPtEta, "\\eta"}};
 
   std::map<int, const char*> TH3ZaxisTitles{
-    {kFT3TrackDeltaXVertexPtEta, "X residual at vertex (um)"},
-    {kFT3TrackDeltaYVertexPtEta, "Y residual at vertex (um)"},
-    {kFT3TrackInvQPtPullPtEta, "(\\Delta q/p_t)/\\sigma_{q/pt}"},
-    {kFT3TrackInvQPtResolutionPtEta, "(q/p_t residual)/(q/pt)"}};
+    {kFCTTrackDeltaXVertexPtEta, "X residual at vertex (um)"},
+    {kFCTTrackDeltaYVertexPtEta, "Y residual at vertex (um)"},
+    {kFCTTrackInvQPtPullPtEta, "(\\Delta q/p_t)/\\sigma_{q/pt}"},
+    {kFCTTrackInvQPtResolutionPtEta, "(q/p_t residual)/(q/pt)"}};
 
   const int nTH3Histos = TH3Names.size();
 
@@ -143,7 +143,7 @@ void FwdTrackerDebugger(size_t nTracks = 1000,
                                                   TH3Binning[n3Histo][8]));
   }
 
-  simFT3Tracks(nTracks, ptmincut, ptMax, etaMin, etaMax, zField, trkDBGTree, TH3Histos);
+  simFCTTracks(nTracks, ptmincut, ptMax, etaMin, etaMax, zField, trkDBGTree, TH3Histos);
 
   fT->mkdir("MoreHistos");
   fT->cd("MoreHistos");
@@ -165,7 +165,7 @@ Float_t EtaToTanl(Float_t eta)
   return tan(TMath::Pi() / 2 - 2 * atan(exp(-eta)));
 }
 
-void simFT3Tracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, float etaMax, float zField, TTree* trkDBGTree, std::vector<std::unique_ptr<TH3F>>& TH3Histos)
+void simFCTTracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, float etaMax, float zField, TTree* trkDBGTree, std::vector<std::unique_ptr<TH3F>>& TH3Histos)
 {
   std::vector<float> zPositionsVec{-16., -20., -24., -77., -100., -122., -150., -180., -220., -279.};
   std::vector<float> layResVec(zPositionsVec.size(), clSigma);
@@ -202,32 +202,32 @@ void simFwdTracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, flo
       std::cout << "\n\n *** New gen track ***\n  MCTrack: X = " << MCTrack.getX() << " Y = " << MCTrack.getY() << " Z = " << MCTrack.getZ() << " Tgl = " << MCTrack.getTanl() << "  Phi = " << MCTrack.getPhi() << "  q/pt = " << MCTrack.getInvQPt() << std::endl;
       std::cout << "    MCTrack at last disk: X = " << tempTrk.getX() << " Y = " << tempTrk.getY() << " Z = " << tempTrk.getZ() << " Tgl = " << tempTrk.getTanl() << "  Phi = " << tempTrk.getPhi() << "  (" << o2::math_utils::toPMPiGen(tempTrk.getPhi()) << ") q/pt = " << tempTrk.getInvQPt() << std::endl;
     }
-    FT3Track ft3ProbeTr;
+    FCTTrack fctProbeTr;
     int nLayer = 0;
     for (auto z : zPositionsVec) {
       MCTrack.propagateParamToZhelix(z, zField);
       //std::cout << " AddHit: MCTrack.getX() = " << MCTrack.getX() << " ; MCTrack.getY() =  " << MCTrack.getY() << "  MCTrack.getZ() = " << MCTrack.getZ() << std::endl;
 
       o2::itsmft::Hit hit(0, 0, {MCTrack.getX(), MCTrack.getY(), MCTrack.getZ()}, {0, 0, 0}, {0, 0, 0}, 0, 0, 0, 0, 0);
-      ft3ProbeTr.addHit(hit, nLayer, clSigma);
+      fctProbeTr.addHit(hit, nLayer, clSigma);
       nLayer++;
     }
     //std::cout << std::endl;
     //if (DEBUG_VERBOSE)
     // std::cout << std::endl;
-    ft3ProbeTr.sort();
+    fctProbeTr.sort();
 
-    fitter.initTrack(ft3ProbeTr);
-    setSeedCovariances(ft3ProbeTr);
-    //fitter.MinuitFit(ft3ProbeTr);
-    fitter.fit(ft3ProbeTr);
+    fitter.initTrack(fctProbeTr);
+    setSeedCovariances(fctProbeTr);
+    //fitter.MinuitFit(fctProbeTr);
+    fitter.fit(fctProbeTr);
     if (DEBUG_qpt)
-      std::cout << "Track " << i << ": \n    q/pt_MC = " << MCTrack.getInvQPt() << "\n    q/pt_Seed = " << ft3ProbeTr.getInvQPtSeed() << "\n    q/pt_fit = " << ft3ProbeTr.getInvQPt() << std::endl;
-    ft3ProbeTr.propagateToZhelix(0.0, zField);
+      std::cout << "Track " << i << ": \n    q/pt_MC = " << MCTrack.getInvQPt() << "\n    q/pt_Seed = " << fctProbeTr.getInvQPtSeed() << "\n    q/pt_fit = " << fctProbeTr.getInvQPt() << std::endl;
+    fctProbeTr.propagateToZhelix(0.0, zField);
     if (DEBUG_VERBOSE)
-      std::cout << "  Track at vertex: X = " << ft3ProbeTr.getX() << " Y = " << ft3ProbeTr.getY() << " Z = " << ft3ProbeTr.getZ() << " Tgl = " << ft3ProbeTr.getTanl() << "  Phi = " << ft3ProbeTr.getPhi() << "  (" << o2::math_utils::toPMPiGen(ft3ProbeTr.getPhi()) << ")  q/pt = " << ft3ProbeTr.getInvQPt() << std::endl;
+      std::cout << "  Track at vertex: X = " << fctProbeTr.getX() << " Y = " << fctProbeTr.getY() << " Z = " << fctProbeTr.getZ() << " Tgl = " << fctProbeTr.getTanl() << "  Phi = " << fctProbeTr.getPhi() << "  (" << o2::math_utils::toPMPiGen(fctProbeTr.getPhi()) << ")  q/pt = " << fctProbeTr.getInvQPt() << std::endl;
 
-    probe = (o2::mft::TrackMFT)ft3ProbeTr;
+    probe = (o2::mft::TrackMFT)fctProbeTr;
     trkDBGTree->Fill();
 
     auto vx_MC = MCTrack_.getX();
@@ -236,22 +236,22 @@ void simFwdTracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, flo
     auto Pt_MC = MCTrack_.getPt();
     auto eta_MC = MCTrack_.getEta();
 
-    auto dx = ft3ProbeTr.getX() - vx_MC;
-    auto dy = ft3ProbeTr.getY() - vy_MC;
-    auto invQPt_Fit = ft3ProbeTr.getInvQPt();
+    auto dx = fctProbeTr.getX() - vx_MC;
+    auto dy = fctProbeTr.getY() - vy_MC;
+    auto invQPt_Fit = fctProbeTr.getInvQPt();
     auto d_invQPt = invQPt_Fit - invQPt_MC;
 
-    TH3Histos[kFT3TrackDeltaXVertexPtEta]->Fill(Pt_MC, std::abs(eta_MC), 1e4 * dx);
-    TH3Histos[kFT3TrackDeltaYVertexPtEta]->Fill(Pt_MC, std::abs(eta_MC), 1e4 * dy);
-    TH3Histos[kFT3TrackInvQPtPullPtEta]->Fill(Pt_MC, std::abs(eta_MC), d_invQPt / sqrt(ft3ProbeTr.getCovariances()(4, 4)));
-    TH3Histos[kFT3TrackInvQPtResolutionPtEta]->Fill(Pt_MC, std::abs(eta_MC), (invQPt_Fit - invQPt_MC) / invQPt_MC);
+    TH3Histos[kFCTTrackDeltaXVertexPtEta]->Fill(Pt_MC, std::abs(eta_MC), 1e4 * dx);
+    TH3Histos[kFCTTrackDeltaYVertexPtEta]->Fill(Pt_MC, std::abs(eta_MC), 1e4 * dy);
+    TH3Histos[kFCTTrackInvQPtPullPtEta]->Fill(Pt_MC, std::abs(eta_MC), d_invQPt / sqrt(fctProbeTr.getCovariances()(4, 4)));
+    TH3Histos[kFCTTrackInvQPtResolutionPtEta]->Fill(Pt_MC, std::abs(eta_MC), (invQPt_Fit - invQPt_MC) / invQPt_MC);
   }
 
   // InvPtResolution vs eta MC Debuger
   auto CPtResInvPt = new TCanvas("PtResVsPt", "PtResVsPt", 1080, 1080);
 
-  auto& FT3TrackInvQPtResolutionPtEtaDBG = TH3Histos[kFT3TrackInvQPtPullPtEta];
-  FT3TrackInvQPtResolutionPtEtaDBG->GetYaxis()->SetRange(0, 0);
+  auto& FCTTrackInvQPtResolutionPtEtaDBG = TH3Histos[kFCTTrackInvQPtPullPtEta];
+  FCTTrackInvQPtResolutionPtEtaDBG->GetYaxis()->SetRange(0, 0);
 
   int marker = kFullCircle;
   std::vector<double> ptList({1, 9.});
@@ -260,10 +260,10 @@ void simFwdTracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, flo
   for (auto ptmin : ptList) {
     auto ptmax = ptmin + ptWindow;
 
-    FT3TrackInvQPtResolutionPtEtaDBG->GetXaxis()->SetRangeUser(ptmin, ptmax);
+    FCTTrackInvQPtResolutionPtEtaDBG->GetXaxis()->SetRangeUser(ptmin, ptmax);
 
     auto title = Form("_%1.2f_%1.2f_yz", ptmin, ptmax);
-    auto aDBG = (TH2F*)FT3TrackInvQPtResolutionPtEtaDBG->Project3D(title);
+    auto aDBG = (TH2F*)FCTTrackInvQPtResolutionPtEtaDBG->Project3D(title);
     aDBG->GetXaxis()->SetRangeUser(0, 0);
 
     aDBG->FitSlicesX(0, 0, -1, 1);
@@ -281,7 +281,7 @@ void simFwdTracks(size_t nTracks, float ptMinCut, float ptMax, float etaMin, flo
   CPtResInvPt->Print("PtResVsPt.png");
 }
 
-void setSeedCovariances(FT3Track& track)
+void setSeedCovariances(FCTTrack& track)
 {
 
   auto tan_k = 10.0;
@@ -327,12 +327,12 @@ void exportHisto(TH1F* histo, const char* filename)
   C1_->Print(filename);
 }
 
-std::vector<float_t> loadx2X0fromFile(std::string configFileName = "FT3_layout.cfg")
+std::vector<float_t> loadx2X0fromFile(std::string configFileName = "FCT_layout.cfg")
 {
   std::vector<float_t> Layersx2X0;
   std::ifstream ifs(configFileName.c_str());
   if (!ifs.good()) {
-    LOG(FATAL) << " Invalid FT3Base.configFile!";
+    LOG(FATAL) << " Invalid FCTBase.configFile!";
   }
   std::string tempstr;
   float z_layer, r_in, r_out, Layerx2X0;

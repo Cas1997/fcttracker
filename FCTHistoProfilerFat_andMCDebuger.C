@@ -33,10 +33,10 @@ float ptmax = 20;
 int nPtPoints = 200;
 bool FAT_ENABLED = true;
 
-// Estimages pt and vertexing resolution from TH3 histograms produced by FT3TrackerChecker
+// Estimages pt and vertexing resolution from TH3 histograms produced by FCTTrackerChecker
 //
 //_________________________________________________________________________________________
-void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.44e-4
+void FCTHistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.44e-4
 {
 
   gStyle->SetHistLineWidth(3);
@@ -73,13 +73,13 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
     pts.emplace_back(i * (ptmax - ptmin) / nPtPoints + ptmin);
   }
 
-  TFile* chkFileIn = new TFile("Fittercheck_ft3tracks.root");
+  TFile* chkFileIn = new TFile("Fittercheck_fcttracks.root");
   TFile* debugFileIn = new TFile("fwdtrackdebugger.root");
-  TFile* profilerFileOut = new TFile("FT3Profiles.root", "RECREATE");
+  TFile* profilerFileOut = new TFile("FCTProfiles.root", "RECREATE");
 
   // FAT pt resolution vs. pt
   auto CPtResInvPt = new TCanvas("PtResVsPt", "PtResVsPt", 1080, 1080);
-  TMultiGraph* ptResGraphs = new TMultiGraph("FT3PtRes", "FT3 q/Pt Resolution");
+  TMultiGraph* ptResGraphs = new TMultiGraph("FCTPtRes", "FCT q/Pt Resolution");
 
   for (auto eta : etaListFAT) {
 
@@ -106,17 +106,17 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
     }
 
   // InvPtResolution vs pt full simulation
-  auto FT3TrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackInvQPtResolutionPtEta");
+  auto FCTTrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackInvQPtResolutionPtEta");
   int marker = kFullCircle;
 
   for (auto etamin : etaList) {
 
     auto etamax = etamin + etaWindow;
 
-    FT3TrackInvQPtResolutionPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
+    FCTTrackInvQPtResolutionPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
 
     auto title = Form("InvQPtRes_%1.1f_%1.1f_xz", etamin, etamax);
-    auto a = (TH2F*)FT3TrackInvQPtResolutionPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackInvQPtResolutionPtEta->Project3D(title);
     a->GetXaxis()->SetRangeUser(-20, 20);
 
     a->FitSlicesX(0, 0, -1, 1);
@@ -129,17 +129,17 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
   }
 
   // InvPtResolution vs pt MC Debuger
-  auto FT3TrackInvQPtResolutionPtEtaDBG = (TH3F*)debugFileIn->Get("MoreHistos/FT3DBGTrackInvQPtResolutionPtEta");
-  FT3TrackInvQPtResolutionPtEtaDBG->GetXaxis()->SetRange(0, 0);
+  auto FCTTrackInvQPtResolutionPtEtaDBG = (TH3F*)debugFileIn->Get("MoreHistos/FCTDBGTrackInvQPtResolutionPtEta");
+  FCTTrackInvQPtResolutionPtEtaDBG->GetXaxis()->SetRange(0, 0);
   marker = kFullCircle;
   if (sigma > 5.e-4)
     for (auto etamin : etaList) {
       auto etamax = etamin + etaWindow;
 
-      FT3TrackInvQPtResolutionPtEtaDBG->GetYaxis()->SetRangeUser(etamin, etamax);
+      FCTTrackInvQPtResolutionPtEtaDBG->GetYaxis()->SetRangeUser(etamin, etamax);
 
       auto title = Form("__%1.2f_%1.2f_xz", etamin, etamax);
-      auto aDBG = (TH2F*)FT3TrackInvQPtResolutionPtEtaDBG->Project3D(title);
+      auto aDBG = (TH2F*)FCTTrackInvQPtResolutionPtEtaDBG->Project3D(title);
       aDBG->GetXaxis()->SetRange(0, 0);
 
       aDBG->FitSlicesX(0, 0, -1, 1);
@@ -159,7 +159,7 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
 
   // FAT pt resolution vs. eta
   auto CPtResInvPtEta = new TCanvas("PtResVsEta", "PtResVsEta", 1080, 1080);
-  TMultiGraph* ptResGraphsEta = new TMultiGraph("FT3PtRes", "FT3 q/Pt Resolution");
+  TMultiGraph* ptResGraphsEta = new TMultiGraph("FCTPtRes", "FCT q/Pt Resolution");
 
   for (auto pt : ptListFAT) {
     auto ptres = getFATPtRes_etas_at_pt(etas, pt, sigma);
@@ -186,17 +186,17 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
     }
 
   // InvPtResolution vs eta Full Simulation
-  FT3TrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackInvQPtResolutionPtEta");
-  FT3TrackInvQPtResolutionPtEta->GetYaxis()->SetRange(0, 0);
+  FCTTrackInvQPtResolutionPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackInvQPtResolutionPtEta");
+  FCTTrackInvQPtResolutionPtEta->GetYaxis()->SetRange(0, 0);
 
   marker = kFullCircle;
   for (auto ptmin : ptList) {
     auto ptmax = ptmin + ptWindow;
 
-    FT3TrackInvQPtResolutionPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
+    FCTTrackInvQPtResolutionPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
 
     auto title = Form("InvQPtResEta_%1.1f_%1.1f_yz", ptmin, ptmax);
-    auto a = (TH2F*)FT3TrackInvQPtResolutionPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackInvQPtResolutionPtEta->Project3D(title);
     a->GetXaxis()->SetRangeUser(-1, 10);
 
     a->FitSlicesX(0, 0, -1, 1);
@@ -209,18 +209,18 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
   }
 
   // InvPtResolution vs eta MC Debuger
-  FT3TrackInvQPtResolutionPtEtaDBG = (TH3F*)debugFileIn->Get("MoreHistos/FT3DBGTrackInvQPtResolutionPtEta");
-  FT3TrackInvQPtResolutionPtEtaDBG->GetYaxis()->SetRange(0, 0);
+  FCTTrackInvQPtResolutionPtEtaDBG = (TH3F*)debugFileIn->Get("MoreHistos/FCTDBGTrackInvQPtResolutionPtEta");
+  FCTTrackInvQPtResolutionPtEtaDBG->GetYaxis()->SetRange(0, 0);
 
   marker = kFullCircle;
   if (sigma > 5.e-4)
     for (auto ptmin : ptList) {
       auto ptmax = ptmin + ptWindow;
 
-      FT3TrackInvQPtResolutionPtEtaDBG->GetXaxis()->SetRangeUser(ptmin, ptmax);
+      FCTTrackInvQPtResolutionPtEtaDBG->GetXaxis()->SetRangeUser(ptmin, ptmax);
 
       auto title = Form("_%1.2f_%1.2f_yz", ptmin, ptmax);
-      auto aDBG = (TH2F*)FT3TrackInvQPtResolutionPtEtaDBG->Project3D(title);
+      auto aDBG = (TH2F*)FCTTrackInvQPtResolutionPtEtaDBG->Project3D(title);
       aDBG->GetXaxis()->SetRangeUser(0, 0);
 
       aDBG->FitSlicesX(0, 0, -1, 1);
@@ -272,20 +272,20 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
 
   /*
   // Vertexing resolution vs eta
-  auto FT3TrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackDeltaXVertexPtEta");
-  FT3TrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
+  auto FCTTrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackDeltaXVertexPtEta");
+  FCTTrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
 
-  FT3TrackDeltaXVertexPtEta->RebinY(2);
+  FCTTrackDeltaXVertexPtEta->RebinY(2);
 
   marker = kFullCircle;
   for (auto ptmin : ptList) {
 
     auto ptmax = ptmin + ptWindow;
 
-    FT3TrackDeltaXVertexPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
+    FCTTrackDeltaXVertexPtEta->GetXaxis()->SetRangeUser(ptmin, ptmax);
 
     auto title = Form("VertXResEta_%1.1f_%1.1f_yz", ptmin, ptmax);
-    auto a = (TH2F*)FT3TrackDeltaXVertexPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackDeltaXVertexPtEta->Project3D(title);
     a->GetXaxis()->SetRangeUser(-1, 10);
     a->FitSlicesX(0, 0, -1, 1);
     auto th2VertEta = (TH1F*)gDirectory->Get((std::string(a->GetName()) + std::string("_2")).c_str());
@@ -322,16 +322,16 @@ void FT3HistoProfilerFat_andMCDebuger(float sigma = 8.44e-4) // ; //1e-6;//  8.4
   }
 
   // Vertexing resolution vs pt
-  auto FT3TrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FT3TrackDeltaXVertexPtEta");
-  FT3TrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
-  FT3TrackDeltaXVertexPtEta->GetXaxis()->SetRange(0, 0);
+  auto FCTTrackDeltaXVertexPtEta = (TH3F*)chkFileIn->Get("MoreHistos/FCTTrackDeltaXVertexPtEta");
+  FCTTrackDeltaXVertexPtEta->GetYaxis()->SetRange(0, 0);
+  FCTTrackDeltaXVertexPtEta->GetXaxis()->SetRange(0, 0);
 
   marker = kFullCircle;
   for (auto etamin : etaList) { // 10 Hits
     auto etamax = etamin + etaWindow;
-    FT3TrackDeltaXVertexPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
+    FCTTrackDeltaXVertexPtEta->GetYaxis()->SetRangeUser(etamin, etamax);
     auto title = Form("VertResPt_%1.1f_%1.1f_xz", etamin, etamax);
-    auto a = (TH2F*)FT3TrackDeltaXVertexPtEta->Project3D(title);
+    auto a = (TH2F*)FCTTrackDeltaXVertexPtEta->Project3D(title);
     a->SetTitle(title);
     a->FitSlicesX(0, 0, -1, 1);
     auto th2VertResolutionPt = (TH1F*)gDirectory->Get((std::string(a->GetName()) + std::string("_2")).c_str());

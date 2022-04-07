@@ -33,7 +33,7 @@ float ptmin = 0.01;
 float ptmax = 10;
 int nPtPoints = 200;
 
-// Estimages pt and vertexing resolution from TH3 histograms produced by FT3TrackerChecker
+// Estimages pt and vertexing resolution from TH3 histograms produced by FCTTrackerChecker
 //
 //_________________________________________________________________________________________
 void FATProfiler()
@@ -62,7 +62,7 @@ void FATProfiler()
     etas.emplace_back(i * (etamax - etamin) / nEtaPoints + etamin);
   }
 
-  TFile* chkFileIn = new TFile("Fittercheck_ft3tracks.root");
+  TFile* chkFileIn = new TFile("Fittercheck_fcttracks.root");
 
   // FAT pt resolution vs. pt
   auto CPtResInvPt = new TCanvas();
